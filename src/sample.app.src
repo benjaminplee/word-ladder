@@ -1,0 +1,12 @@
+{application, sample,
+ [
+  {description, "Sample erlang Echo server app"},
+  {vsn, "1"},
+  {registered, []},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { sample_app, []}},
+  {env, []}
+ ]}.
