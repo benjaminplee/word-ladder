@@ -1,50 +1,97 @@
 -module(word).
--behaviour(gen_server).
+
+-behaviour(gen_event).
+
 -define(SERVER, ?MODULE).
 
-%% ------------------------------------------------------------------
-%% API Function Exports
-%% ------------------------------------------------------------------
+%% API
+-export([word_builder/3]).
 
--export([start_link/0]).
+%% gen_event callbacks
+-export([init/1, handle_event/2, handle_call/2, 
+         handle_info/2, terminate/2, code_change/3]).
 
-%% ------------------------------------------------------------------
-%% gen_server Function Exports
-%% ------------------------------------------------------------------
+word_builder(Word, History, Goal) ->
+  io:format("someone new! ~w ~w ~w ~w~n", [Word, History, Goal, self()]),
+  ok.
 
--export([init/1, handle_call/3, handle_cast/2, handle_info/2,
-         terminate/2, code_change/3]).
+%%====================================================================
+%% gen_event callbacks
+%%====================================================================
+%%--------------------------------------------------------------------
+%% @spec init(Args) -> {ok, State}
+%% @doc Whenever a new event handler is added to an event manager,
+%% this function is called to initialize the event handler.
+%% @end 
+%%--------------------------------------------------------------------
+init(Word) ->
+    {ok, Word}.
 
-%% ------------------------------------------------------------------
-%% API Function Definitions
-%% ------------------------------------------------------------------
+%%--------------------------------------------------------------------
+%% @spec  
+%% handle_event(Event, State) -> {ok, State} |
+%%                               {swap_handler, Args1, State1, Mod2, Args2} |
+%%                               remove_handler
+%% @doc an event manager receives an event sent using
+%% gen_event:notify/2 or gen_event:sync_notify/2, this function is called for
+%% each installed event handler to handle the event. 
+%% @end 
+%%--------------------------------------------------------------------
+handle_event({lookup, Word, History, Word}, Word) ->
+    io:format("FOUND ONE! ~w~n", [lists:reverse([Word | History])]),
+    {ok, Word};
+handle_event({lookup, Word, History, Goal}, Word) ->
+    erlang:spawn(?MODULE, word_builder, [Word, [Word | History], Goal]),
+    {ok, Word};
+handle_event(_Event, State) ->
+    {ok, State}.
 
-start_link() ->
-    gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
+%%--------------------------------------------------------------------
+%% @spec handle_call(Request, State) -> {ok, Reply, State} |
+%%                                {swap_handler, Reply, Args1, State1, 
+%%                                  Mod2, Args2} |
+%%                                {remove_handler, Reply}
+%% @doc Whenever an event manager receives a request sent using
+%% gen_event:call/3,4, this function is called for the specified event 
+%% handler to handle the request.
+%% @end 
+%%--------------------------------------------------------------------
+handle_call(_Request, State) ->
+    Reply = ok,
+    {ok, Reply, State}.
 
-%% ------------------------------------------------------------------
-%% gen_server Function Definitions
-%% ------------------------------------------------------------------
-
-init(Args) ->
-    {ok, Args}.
-
-handle_call(_Request, _From, State) ->
-    {noreply, ok, State}.
-
-handle_cast(_Msg, State) ->
-    {noreply, State}.
-
+%%--------------------------------------------------------------------
+%% @spec 
+%% handle_info(Info, State) -> {ok, State} |
+%%                             {swap_handler, Args1, State1, Mod2, Args2} |
+%%                              remove_handler
+%% @doc This function is called for each installed event handler when
+%% an event manager receives any other message than an event or a synchronous
+%% request (or a system message).
+%% @end 
+%%--------------------------------------------------------------------
 handle_info(_Info, State) ->
-    {noreply, State}.
+    {ok, State}.
 
+%%--------------------------------------------------------------------
+%% @spec terminate(Reason, State) -> void()
+%% @doc an event handler is deleted from an event manager,
+%% this function is called. It should be the opposite of Module:init/1 and 
+%% do any necessary cleaning up. 
+%% @end 
+%%--------------------------------------------------------------------
 terminate(_Reason, _State) ->
     ok.
 
+%%--------------------------------------------------------------------
+%% @spec code_change(OldVsn, State, Extra) -> {ok, NewState} 
+%% @doc Convert process state when code is changed
+%% @end 
+%%--------------------------------------------------------------------
 code_change(_OldVsn, State, _Extra) ->
     {ok, State}.
 
-%% ------------------------------------------------------------------
-%% Internal Function Definitions
-%% ------------------------------------------------------------------
+%%--------------------------------------------------------------------
+%%% Internal functions
+%%--------------------------------------------------------------------
 
