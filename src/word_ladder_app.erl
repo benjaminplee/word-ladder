@@ -1,4 +1,4 @@
--module(sample_app).
+-module(word_ladder_app).
 
 -behaviour(application).
 
@@ -10,7 +10,7 @@
 %% ===================================================================
 
 start(_StartType, _StartArgs) ->
-    sample_sup:start_link().
+    word_ladder_sup:start_link().
 
 stop(_State) ->
     ok.

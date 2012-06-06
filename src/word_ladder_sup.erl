@@ -1,5 +1,4 @@
-
--module(sample_sup).
+-module(word_ladder_sup).
 
 -behaviour(supervisor).
 
@@ -24,5 +23,5 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-    {ok, { {one_for_one, 5, 10}, []} }.
+  {ok, { {one_for_one, 5, 10}, [?CHILD(word, worker)]} }.
 
