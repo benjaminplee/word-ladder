@@ -5,8 +5,7 @@ start() ->
   application:start(sasl),
   application:start(word_ladder),
   initialize("four_letter_words.txt"),
-  %initialize("foo.txt"),
-  find("mark", "barn"),
+  find("cold", "warm"),
   ok.
 
 initialize(FileName) ->

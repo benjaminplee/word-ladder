@@ -1,5 +1,4 @@
 -module(word_ladder_sup).
-
 -behaviour(supervisor).
 
 %% API
@@ -8,9 +7,7 @@
 %% Supervisor callbacks
 -export([init/1, lookup_word/3, add_word/1]).
 
-%% Helper macro for declaring children of supervisor
 -define(CHILD(I, Type, Arg), {I, {I, start_link, [Arg]}, permanent, 5000, Type, [I]}).
-
 -define(DICTIONARY_EVENT_MGR, {global, dictionary_event_mgr}).
 
 %% ===================================================================
@@ -32,4 +29,3 @@ add_word(Word) ->
 
 init([]) ->
   {ok, { {one_for_one, 5, 10}, [?CHILD(gen_event, worker, ?DICTIONARY_EVENT_MGR)]} }.
-
