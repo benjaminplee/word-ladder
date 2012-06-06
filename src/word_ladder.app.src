@@ -7,6 +7,5 @@
                   kernel,
                   stdlib
                  ]},
-  {mod, { word_ladder_app, []}},
   {env, []}
  ]}.
