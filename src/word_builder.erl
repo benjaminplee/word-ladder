@@ -2,8 +2,20 @@
 -compile([export_all]).
 
 build(Word, History, Goal) ->
-  io:format("someone new! ~p ~p ~p ~p~n", [Word, History, Goal, self()]),
-  characters([], Word, History, Goal),
+  case lists:foldl(fun(X, Sum) -> 
+                     case (X == Word) of
+                       true -> 
+                         Sum + 1; 
+                       false -> 
+                         Sum 
+                     end 
+                   end, 0, History) of
+    1 ->
+      %io:format("New link  ~p ~p ~p ~p~n", [Word, History, Goal, self()]),
+      characters([], Word, History, Goal);
+    _ ->
+      noop
+  end,
   ok.
 
 characters(_Prefix, [], _History, _Goal) ->
