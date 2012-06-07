@@ -12,7 +12,7 @@ loop() ->
       io:format("Solution! ~p~n", [Chain]),
       exit("Found a solution"),
       ok;
-    {Link, Chain, Goal} when length(Chain) < 10 ->
+    {Link, Chain, Goal} ->
       find_next_link(Link, Chain, Goal),
       loop()
   end.
