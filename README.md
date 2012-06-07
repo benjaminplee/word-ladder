@@ -11,11 +11,12 @@ hacked together a a discussion piece and not as an example of fine code.
 only supports 4 letter words
 
 currently, to run
+----------------
 
-# from shell, will get dependencies (gproc), clean, compile and run erl with your binaries
+from shell, will get dependencies (gproc), clean, compile and run erl with your binaries
 ./start.sh
 
-# in erl
+in erl
 word_ladder_app:start().
 word_ladder_app:initialize().
 word_ladder_app:find("cold", "warm").
