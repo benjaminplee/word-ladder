@@ -2,27 +2,30 @@
 -compile([export_all]).
 
 start() ->
-  application:start(sasl),
   application:start(gproc),
-  initialize("four_letter_words.txt"),
   ok.
+
+initialize() ->
+  initialize("four_letter_words.txt").
 
 initialize(FileName) ->
-  [spawn_process(X) || X <- readlines(FileName)],
-  ok.
-
-spawn_process(Word) ->
-  ok.
-
-%find(StartWord, EndWord) ->
-  %word_ladder_sup:lookup_word(StartWord, [], EndWord).
-
-readlines(FileName) ->
   {ok, Device} = file:open(FileName, [read]),
-  get_all_lines(Device, []).
+  establish_words(Device),
+  ok.
 
-get_all_lines(Device, Accum) ->
+find() ->
+  find("cold", "warm").
+
+find(Start, End) ->
+  io:format("Finding ladder from [~p] to [~p]...~n", [Start, End]),
+  gproc:send({n, l, End}, {End, [End], Start}),
+  ok.
+
+establish_words(Device) ->
   case io:get_line(Device, "") of
-    eof  -> file:close(Device), [lists:filter(fun(10) -> false; (_) -> true end, Line) || Line <- Accum];
-    Line -> get_all_lines(Device, [Line | Accum])
+    eof  -> file:close(Device);
+    Line -> erlang:spawn_link(word, establish, [strip_line_ending(Line)]), establish_words(Device)
   end.
+
+strip_line_ending(Line) ->
+  lists:filter(fun(X) -> X =/= 10 end, Line).
